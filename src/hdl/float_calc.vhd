@@ -8,7 +8,7 @@ USE IEEE.NUMERIC_STD.ALL;
 --
 --1001 Positiivset tulemust ei saa vähendada
 --1010 Negatiivsed tulemust ei saa vähendada
-
+--dd
 --1111 mantissi ei saa vähendada
 
 entity float_calc is
