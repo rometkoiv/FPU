@@ -1,2 +1,2 @@
 # FPU
-Ujukoma arvutus Nexys 4 FPGA l
+Ujupunktarvude liitmine, lahutamine ja korrutamine Nexys 4 FPGA l
