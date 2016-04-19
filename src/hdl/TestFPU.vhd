@@ -34,8 +34,8 @@ clk <= not clk after 5 ns;
 test_float_calc: float_calc PORT MAP(
 
                     clk =>CLK,
-                      --mantA_in => "0000000000101", --5
-                      mantA_in => "1111111111011", -- -5 
+                      mantA_in => "0000000000101", --5
+                      --mantA_in => "1111111111011", -- -5 
                       mantB_in => "0000000000111", --7 
                       powA => "10101111", -- -128
                       powB => "10101111", -- -81
