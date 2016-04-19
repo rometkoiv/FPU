@@ -8,6 +8,7 @@ entity float_calc is
     Generic ( mlen : INTEGER range 1 to (INTEGER'high) := 12;
             plen : INTEGER range 1 to (INTEGER'high) := 7 );
     Port ( clk : in STD_LOGIC;
+           error : out STD_LOGIC:='0';
            mantA_in : in STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
            mantB_in : in STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
            powA : in STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
@@ -30,6 +31,7 @@ variable mantA : STD_LOGIC_VECTOR (13 downto 0):=(others => '0');
 variable mantB : STD_LOGIC_VECTOR (13 downto 0):=(others => '0');
 variable mantC : STD_LOGIC_VECTOR (13 downto 0):=(others => '0');
 variable powMinus : STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
+variable powPlus : STD_LOGIC_VECTOR (8 downto 0):=(others => '0');
 
 variable minusOne : STD_LOGIC_VECTOR (13 downto 0):=(others => '1');
 variable mult : STD_LOGIC_VECTOR (27 downto 0):=(others => '0');
@@ -108,24 +110,34 @@ begin
         end if;
       end if;
       
-      --kui mantiss on liiga suur suurendame astendajat
-      if to_integer(unsigned(powC)) < -4096 or to_integer(unsigned(powC)) > 4095 then
-         powC := powC+1;
-         mant<=mantC(13 downto 1);
-      else
-         mant<=mantC(12 downto 0);
-      end if;
-      
-      
+
    
    --korrutamine        
    elsif mode = "10" then
-    mant<="0011111000111";
+    mult:= std_logic_vector(signed(mantA)*signed(mantB));
+    powPlus:= powA(7)&powA + powB(7)&powB;
+    if(to_integer(unsigned(powC))) = 0 then
+    end if;
+   
    else
-    --mant<="0000000000000";
+   
    end if;
-   ---pow<="11110000";
-   pow<=powC;
+   
+
+      --kui mantiss on liiga suur suurendame astendajat
+      if to_integer(signed(mantC)) < -4096 or to_integer(signed(mantC)) > 4095 then
+         if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
+         powC := powC+1;
+         mant<=mantC(13 downto 1);
+         else 
+         error<='1';
+         end if;
+      else
+         mant<=mantC(12 downto 0);
+      end if;
+
+      pow<=powC;
+      
 end process;
 
 end Behavioral;
