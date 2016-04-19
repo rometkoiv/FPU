@@ -3,12 +3,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.std_logic_signed.all;
 USE IEEE.NUMERIC_STD.ALL;
 
+--Veakoodid
+--0001
+--
+--1001
+--1011 liiga suur mantiss
+--1111 mantissi ei saa vähendada
 
 entity float_calc is
-    Generic ( mlen : INTEGER range 1 to (INTEGER'high) := 12;
+    Generic ( mlen : INTEGER range 1 to (INTEGER'high) := 13;
             plen : INTEGER range 1 to (INTEGER'high) := 7 );
     Port ( clk : in STD_LOGIC;
-           error : out STD_LOGIC:='0';
+           errorCode : out STD_LOGIC_VECTOR (3 downto 0):=(others => '0');
            mantA_in : in STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
            mantB_in : in STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
            powA : in STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
@@ -35,6 +41,7 @@ variable powPlus : STD_LOGIC_VECTOR (8 downto 0):=(others => '0');
 
 variable minusOne : STD_LOGIC_VECTOR (13 downto 0):=(others => '1');
 variable mult : STD_LOGIC_VECTOR (27 downto 0):=(others => '0');
+variable multMax : INTEGER range 1 to (INTEGER'high);
 
 
 begin
@@ -115,22 +122,54 @@ begin
    --korrutamine        
    elsif mode = "10" then
     mult:= std_logic_vector(signed(mantA)*signed(mantB));
-    powPlus:= powA(7)&powA + powB(7)&powB;
-    if(to_integer(unsigned(powC))) = 0 then
+    powPlus:= std_logic_vector(powA(7)&powA) + std_logic_vector(powB(7)&powB);
+    
+    --Korrutise väärtus
+    if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
+        if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
+        
+        --positiivne
+        if (to_integer(signed(mult))) > 0 then
+          for index in ((mlen+mlen)-1) downto 0 loop
+                      if mult(index) > '0'  then
+                      
+                      if (to_integer(signed(powC)) + index)<=127 then  
+                      mantC:=std_logic_vector(shift_left(unsigned(mult), index-8));
+                      powc:=powc + (index-8);
+                      else                    
+                        errorCode<="1001";
+                      end if;
+                      
+                      exit;
+                      end if;   
+            end loop;
+        --negatiivne
+        else
+        end if;
+        else
+        --Mantiss on suur, aga astendaja on ka suur
+                   errorCode<="1011";
+        end if;
+     
+    else
+   
+    mantC:=mult(13 downto 0);
+    powC:=powPlus(7 downto 0);
+    
     end if;
    
-   else
    
+   --Mode if end
    end if;
    
 
       --kui mantiss on liiga suur suurendame astendajat
-      if to_integer(signed(mantC)) < -4096 or to_integer(signed(mantC)) > 4095 then
+      if to_integer(signed(mantC)) < -3072 or to_integer(signed(mantC)) > 4095 then
          if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
          powC := powC+1;
          mant<=mantC(13 downto 1);
          else 
-         error<='1';
+         errorCode<="1111";
          end if;
       else
          mant<=mantC(12 downto 0);

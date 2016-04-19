@@ -35,6 +35,7 @@ end component;
 component float_calc is
     Port ( 
          clk : in STD_LOGIC;
+         errorCode : out STD_LOGIC_VECTOR (3 downto 0):=(others => '0');
          mantA_in : in STD_LOGIC_VECTOR (12 downto 0);
          mantB_in : in STD_LOGIC_VECTOR (12 downto 0);
          powA : in STD_LOGIC_VECTOR (7 downto 0);
