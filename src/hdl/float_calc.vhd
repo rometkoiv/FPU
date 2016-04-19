@@ -6,8 +6,9 @@ USE IEEE.NUMERIC_STD.ALL;
 --Veakoodid
 --0001
 --
---1001
---1011 liiga suur mantiss
+--1001 Positiivset tulemust ei saa vähendada
+--1010 Negatiivsed tulemust ei saa vähendada
+
 --1111 mantissi ei saa vähendada
 
 entity float_calc is
@@ -126,17 +127,19 @@ begin
     
     --Korrutise väärtus
     if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
-        if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
+        
         
         --positiivne
         if (to_integer(signed(mult))) > 0 then
           for index in ((mlen+mlen)-1) downto 0 loop
                       if mult(index) > '0'  then
                       
-                      if (to_integer(signed(powC)) + index)<=127 then  
-                      mantC:=std_logic_vector(shift_left(unsigned(mult), index-8));
+                      if (to_integer(signed(powC)) + (index-8))<=127 then  
+                      mult:=std_logic_vector(shift_left(unsigned(mult), index-8));
+                      mantC:= mult(13 downto 0);
                       powc:=powc + (index-8);
-                      else                    
+                      else  
+                        --Positiivset tulemust ei saa vähendada                  
                         errorCode<="1001";
                       end if;
                       
@@ -145,11 +148,23 @@ begin
             end loop;
         --negatiivne
         else
+           for index in ((mlen+mlen)-1) downto 0 loop
+                 if mult(index) = '0'  then
+                          
+                       if (to_integer(signed(powC)) - (index-8))>=-96 then  
+                       mult:=std_logic_vector(shift_right(unsigned(mult), index-8));
+                       mantC:= mult(13 downto 0);
+                       powc:=powc - (index-8);
+                       else  
+                        --Negatiivset tulemust ei saa vähendada                  
+                           errorCode<="1010";
+                       end if;
+                              
+                 exit;
+                 end if;   
+                    end loop;
         end if;
-        else
-        --Mantiss on suur, aga astendaja on ka suur
-                   errorCode<="1011";
-        end if;
+       
      
     else
    
