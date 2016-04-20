@@ -20,8 +20,8 @@ component float_calc is
          errorCode : out STD_LOGIC_VECTOR (3 downto 0);
          mantA_in : in STD_LOGIC_VECTOR (12 downto 0);
          mantB_in : in STD_LOGIC_VECTOR (12 downto 0);
-         powA : in STD_LOGIC_VECTOR (7 downto 0);
-         powB : in STD_LOGIC_VECTOR (7 downto 0);
+         powA_in : in STD_LOGIC_VECTOR (7 downto 0);
+         powB_in : in STD_LOGIC_VECTOR (7 downto 0);
          mode : in STD_LOGIC_VECTOR (1 downto 0);
          mant : out STD_LOGIC_VECTOR (12 downto 0);
          pow : out STD_LOGIC_VECTOR (7 downto 0));
@@ -37,15 +37,15 @@ test_float_calc: float_calc PORT MAP(
 
                     clk =>CLK,
                     errorCode=>error,
-                      --mantA_in => "0000000000101", --5
-                      mantA_in => "1010000100000",
+                      mantA_in => "0000000000101", --5
+                      --mantA_in => "1010000100000",
                       --mantA_in => "0111111111011", -- -5 
-                      mantB_in => "0000000000111", --7 
+                      mantB_in => "0000000001111", --7 
                       --powA => "10101111", -- -128
                       --powB => "10101111", -- -81
-                      powA => "00000001", -- 1
-                      powB => "00000001", -- 1
-                      mode => "10",
+                      powA_in => "00000010", -- 2
+                      powB_in => "00000001", -- 1
+                      mode => "01",
                       mant => mant,
                       pow =>pow
    );
