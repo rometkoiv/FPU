@@ -129,50 +129,50 @@ begin
     if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
         
         
-        --positiivne
+        --positiivse mantissi vähendamine
         if (to_integer(signed(mult))) > 0 then
+        
           for index in ((mlen+mlen)-1) downto 0 loop
-                      if mult(index) > '0'  then
+              if mult(index) > '0'  then
                       
-                      if (to_integer(signed(powC)) + (index-8))<=127 then  
-                      mult:=std_logic_vector(shift_left(unsigned(mult), index-8));
-                      mantC:= mult(13 downto 0);
-                      powc:=powc + (index-8);
-                      else  
-                        --Positiivset tulemust ei saa vähendada                  
-                        errorCode<="1001";
-                      end if;
+                  if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
+                    mantC:= mult((index+1) downto (index-mlen+1));
+                    powPlus:=powPlus + (index-mlen+1);
+                    
+                  else  
+                    --Positiivset tulemust ei saa vähendada                  
+                    errorCode<="1001";
+                  end if;
                       
-                      exit;
-                      end if;   
+                 exit;
+               end if;   
             end loop;
-        --negatiivne
+        --negatiivse mantissi suurendamine
         else
            for index in ((mlen+mlen)-1) downto 0 loop
-                 if mult(index) = '0'  then
-                          
-                       if (to_integer(signed(powC)) - (index-8))>=-96 then  
-                       mult:=std_logic_vector(shift_right(unsigned(mult), index-8));
-                       mantC:= mult(13 downto 0);
-                       powc:=powc - (index-8);
-                       else  
-                        --Negatiivset tulemust ei saa vähendada                  
-                           errorCode<="1010";
-                       end if;
+               if mult(index) = '0'  then
+                  if (to_integer(signed(powPlus)) - (index-mlen))>=-96 then  
+                  errorCode<=powPlus(3 downto 0);
+                    mantC:= mult((index+1) downto (index-mlen+1));
+                    powPlus:=powPlus - (index-mlen+1);
+                    
+                  else  
+                  --Negatiivset tulemust ei saa vähendada                  
+                    errorCode<="1010";
+                  end if;
                               
                  exit;
-                 end if;   
-                    end loop;
+               end if;   
+           end loop;
         end if;
        
      
     else
-   
+    --Kui korras kanname otse üle
     mantC:=mult(13 downto 0);
-    powC:=powPlus(7 downto 0);
-    
     end if;
-   
+    
+    powC:=powPlus(7 downto 0);
    
    --Mode if end
    end if;
@@ -181,8 +181,15 @@ begin
       --kui mantiss on liiga suur suurendame astendajat
       if to_integer(signed(mantC)) < -3072 or to_integer(signed(mantC)) > 4095 then
          if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
-         powC := powC+1;
-         mant<=mantC(13 downto 1);
+          if mantC(13)='0' then
+            powC := powC+1;
+            mant<=mantC(13 downto 1);
+          else
+            
+            powC := powC-1;
+            mant<=mantC(13 downto 1);
+                  
+          end if;
          else 
          errorCode<="1111";
          end if;

@@ -31,15 +31,15 @@ end component;
 
 begin
 --Hertsid
-clk <= not clk after 5 ns;
+clk <= not clk after 500 ns;
 
 test_float_calc: float_calc PORT MAP(
 
                     clk =>CLK,
                     errorCode=>error,
                       --mantA_in => "0000000000101", --5
-                      mantA_in => "0111111111101",
-                      --mantA_in => "1111111111011", -- -5 
+                      mantA_in => "1010000100000",
+                      --mantA_in => "0111111111011", -- -5 
                       mantB_in => "0000000000111", --7 
                       --powA => "10101111", -- -128
                       --powB => "10101111", -- -81
