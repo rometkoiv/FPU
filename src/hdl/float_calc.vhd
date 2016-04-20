@@ -9,8 +9,6 @@ USE IEEE.NUMERIC_STD.ALL;
 --1111 mantissi ei saa vähendada
 
 entity float_calc is
-    Generic ( mlen : INTEGER range 1 to (INTEGER'high) := 13;
-            plen : INTEGER range 1 to (INTEGER'high) := 7 );
     Port ( clk : in STD_LOGIC;
            errorCode : out STD_LOGIC_VECTOR (3 downto 0):=(others => '0');
            mantA_in : in STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
@@ -29,6 +27,10 @@ begin
 
 
 float_calculator : process(clk)
+--Constants
+variable mlen : INTEGER range 1 to (INTEGER'high) := 13;
+variable plen : INTEGER range 1 to (INTEGER'high) := 7; 
+
 --variables
 variable tshift : INTEGER range 1 to (INTEGER'high):=1;
 variable powA : STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
@@ -148,12 +150,12 @@ begin
         --positiivse mantissi vähendamine
         if (to_integer(signed(mult))) > 0 then
         
-          for index in ((mlen+mlen)-1) downto 0 loop
+          for index in (mlen+mlen+1) downto mlen loop
               if mult(index) > '0'  then
                       
                   if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
-                    mantC:= mult((index+1) downto (index-mlen+1));
-                    powPlus:=powPlus + (index-mlen+1);
+                    mantC:= mult((index) downto (index-mlen));
+                    powPlus:=powPlus + (index-mlen);
                     
                   else  
                     --Positiivset tulemust ei saa vähendada                  
@@ -165,12 +167,12 @@ begin
             end loop;
         --negatiivse mantissi suurendamine
         else
-           for index in ((mlen+mlen)-1) downto 0 loop
+           for index in (mlen+mlen+1) downto mlen loop
                if mult(index) = '0'  then
                   if (to_integer(signed(powPlus)) - (index-mlen))>=-96 then  
                   errorCode<=powPlus(3 downto 0);
-                    mantC:= mult((index+1) downto (index-mlen+1));
-                    powPlus:=powPlus - (index-mlen+1);
+                    mantC:= mult((index) downto (index-mlen));
+                    powPlus:=powPlus - (index-mlen);
                     
                   else  
                   --Negatiivset tulemust ei saa vähendada                  

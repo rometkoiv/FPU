@@ -38,8 +38,8 @@ component float_calc is
          errorCode : out STD_LOGIC_VECTOR (3 downto 0):=(others => '0');
          mantA_in : in STD_LOGIC_VECTOR (12 downto 0);
          mantB_in : in STD_LOGIC_VECTOR (12 downto 0);
-         powA : in STD_LOGIC_VECTOR (7 downto 0);
-         powB : in STD_LOGIC_VECTOR (7 downto 0);
+         powA_in : in STD_LOGIC_VECTOR (7 downto 0);
+         powB_in : in STD_LOGIC_VECTOR (7 downto 0);
          mode : in STD_LOGIC_VECTOR (1 downto 0);
          mant : out STD_LOGIC_VECTOR (12 downto 0);
          pow : out STD_LOGIC_VECTOR (7 downto 0));
@@ -62,15 +62,19 @@ SIGNAL numbers : STD_LOGIC_VECTOR(31 downto 0);
 --onscreen
 SIGNAL onscreen : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
 --Vars
-SIGNAL mant_a : STD_LOGIC_VECTOR(12 downto 0);
-SIGNAL mant_b : STD_LOGIC_VECTOR(12 downto 0);
-SIGNAL pow_a : STD_LOGIC_VECTOR(7 downto 0);
-SIGNAL pow_b : STD_LOGIC_VECTOR(7 downto 0);
+SIGNAL mant_a : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
+SIGNAL mant_b : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
+SIGNAL mant : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
+SIGNAL pow_a : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
+SIGNAL pow_b : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
+SIGNAL pow : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 
 --Used to determine when a button press has occured
 signal btnReg : std_logic_vector (4 downto 0) := "00000";
 signal btnDetect : std_logic;
 signal btnDeBnc : std_logic_vector(4 downto 0);
+
+signal mode : std_logic_vector(1 downto 0);
 
 begin
 
@@ -113,6 +117,17 @@ begin
       result => numbers(19 downto 0)
    );
    
+   mapFloatingPointUnit: float_calc Port MAP( 
+            clk => clk,
+            mantA_in =>mant_a,
+            mantB_in =>mant_b,
+            powA_in =>pow_a,
+            powB_in =>pow_b,
+            mode =>mode,
+            mant=>mant,
+            pow =>pow
+   );
+   
    
    action_map : process(btnReg)
    begin
@@ -152,12 +167,20 @@ begin
                               onscreen(11 downto 7)<="00000";
                            end if;  
           end if;
-
+       --Liitmine
        elsif btnReg = "10000" then
-       
-          numbers(31 downto 28)<="1011"; --P
-          numbers(27 downto 24)<="0010"; --2
-       
+          mode<="00";
+          if SW(14 downto 13)="00" then
+           numbers(31 downto 28)<="1010"; --M
+           numbers(27 downto 24)<="0011"; --3
+           onscreen<=mant;
+          elsif SW(14 downto 13)="01" then
+           numbers(31 downto 28)<="1011"; --P
+           numbers(27 downto 24)<="0011"; --3
+           onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
+                    
+          end if;
+          onscreen<=mant;
        end if; 
    end process;
    
