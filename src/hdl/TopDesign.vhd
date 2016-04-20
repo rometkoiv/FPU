@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+--USE IEEE.NUMERIC_STD.ALL;
 
 
 entity TopDesign is
@@ -69,6 +69,8 @@ SIGNAL pow_a : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 SIGNAL pow_b : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 SIGNAL pow : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 
+SIGNAL errorCode : STD_LOGIC_VECTOR(3 downto 0):=(others=>'0');
+
 --Used to determine when a button press has occured
 signal btnReg : std_logic_vector (4 downto 0) := "00000";
 signal btnDetect : std_logic;
@@ -119,6 +121,7 @@ begin
    
    mapFloatingPointUnit: float_calc Port MAP( 
             clk => clk,
+            errorCode=>errorCode,
             mantA_in =>mant_a,
             mantB_in =>mant_b,
             powA_in =>pow_a,
@@ -167,28 +170,46 @@ begin
                               onscreen(11 downto 7)<="00000";
                            end if;  
           end if;
+       --Tehted
+       elsif btnReg = "10000" or btnReg = "01000" or btnReg = "00100" then
        --Liitmine
-       elsif btnReg = "10000" then
+        if btnReg = "10000" then
           mode<="00";
-          if SW(14 downto 13)="00" then
+          numbers(27 downto 24)<="0011"; --3
+        --Lahutamine
+        elsif btnReg = "01000" then
+         mode<="01";
+         numbers(27 downto 24)<="0100"; --4
+        --Korrutamine
+        elsif btnReg = "01000" then
+         mode<="10";
+         numbers(27 downto 24)<="0101"; --5
+        end if;
+        
+        if SW(14 downto 13)="00" then
            numbers(31 downto 28)<="1010"; --M
-           numbers(27 downto 24)<="0011"; --3
            onscreen<=mant;
-          elsif SW(14 downto 13)="01" then
+        elsif SW(14 downto 13)="01" then
            numbers(31 downto 28)<="1011"; --P
-           numbers(27 downto 24)<="0011"; --3
            onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
+           onscreen(6 downto 0)<=pow(6 downto 0);         
+        end if;
+      --Veakood ekraaanile
+      if errorCode(3)='1' then
+         -- numbers(31 downto 0)<=(others=>'1');
+         -- onscreen(3 downto 0 )<=errorCode;
+      end if;
                     
-          end if;
-          onscreen<=mant;
-       end if; 
+      --Kui nuppe ei vajuta on tühi
+      numbers(31 downto 0)<=(others=>'1');
+     end if; 
    end process;
    
    
    --numbers(7 downto 0)<= SW(7 downto 0);
    
    
-   numbers(23 downto 20)<="1111"; --R
+   --numbers(23 downto 20)<="1111"; --R
    --numbers(19 downto 16)<="1111"; --O
    
    --numbers(11 downto 8)<="1111";
