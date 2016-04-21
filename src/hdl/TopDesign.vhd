@@ -1,3 +1,11 @@
+----------------------------------------------------------------------------------
+-- Company: TTU ATI
+-- Engineer: Romet Koiv
+-- Module Name: TopDesign - Behavioral
+-- Dependency: float_calc,debouncer, bin_to_dec, segmentdriver
+-- Target Devices: Nexys 4
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;

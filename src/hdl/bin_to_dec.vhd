@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------
+-- Company: TTU ATI
+-- Engineer: Romet Koiv
+-- Module Name: bin_to_dec - Behavioral
+-- Target Devices: Nexys 4
+----------------------------------------------------------------------------------
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
