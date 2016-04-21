@@ -4,7 +4,8 @@ use IEEE.NUMERIC_STD.ALL;
 
 
 entity bin_to_dec is
-    Port ( sign : in STD_LOGIC;
+    Port ( clk : in STD_LOGIC;
+           sign : in STD_LOGIC;
            number : in STD_LOGIC_VECTOR(11 downto 0);
            result : out STD_LOGIC_VECTOR (19 downto 0));
 end bin_to_dec;
@@ -14,7 +15,7 @@ architecture Behavioral of bin_to_dec is
 begin
 
    
-   bin_to_bcd : process (number)
+   bin_to_bcd : process (number,clk)
       -- Internal variable for storing bits
       
       variable shift : unsigned(27 downto 0);

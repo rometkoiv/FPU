@@ -25,7 +25,8 @@ component segmentdriver is
 end component;
 
 component bin_to_dec is
-    Port ( sign : in STD_LOGIC;
+    Port ( clk : in STD_LOGIC; 
+           sign : in STD_LOGIC;
            number : in STD_LOGIC_VECTOR(11 downto 0);
            result : out STD_LOGIC_VECTOR (19 downto 0)
            );
@@ -103,7 +104,7 @@ begin
    );
    
    mapBinToDec: bin_to_dec PORT MAP(
-     
+      clk=> clk,
       sign =>onscreen(12),
       number => onscreen(11 downto 0),
       result => numbers(19 downto 0)
@@ -128,7 +129,8 @@ begin
               
     end process;
       
-   action_map : process(btnReg)
+   action_map : process(btnReg,clk)
+   variable toScreen :STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
    begin
        --BTNR sisestus
        if btnReg = "00001" then
@@ -196,10 +198,19 @@ begin
          numbers(31 downto 0)<=(others=>'1');
          onscreen(3 downto 0 )<=errorCode;
       end if;
-                    
-      --Kui nuppe ei vajuta on tühi
-      numbers(31 downto 0)<=(others=>'1');
+      
+      elsif btnReg = "00010" then
+      --Kui BTND siis nullime
+      mant_a<=(others=>'0');
+      mant_b<=(others=>'0');
+      pow_a<=(others=>'0');
+      pow_b<=(others=>'0');
+      mant<=(others=>'0');
+      pow<=(others=>'0');
+      onscreen<=(others=>'0');
      end if; 
+     
+     
    end process;
    
    
