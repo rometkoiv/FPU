@@ -4,6 +4,7 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 --USE IEEE.NUMERIC_STD.ALL;
 
 
+--Siinsed pordid peavad olema sama nimega kui constriant fail
 entity TopDesign is
     Port ( 
            SW 			: in  STD_LOGIC_VECTOR (15 downto 0);
@@ -12,7 +13,6 @@ entity TopDesign is
            LED             : out  STD_LOGIC_VECTOR (15 downto 0);
            SSEG_CA         : out  STD_LOGIC_VECTOR (7 downto 0);
            SSEG_AN         : out  STD_LOGIC_VECTOR (7 downto 0)
-           
            );
 end TopDesign;
 
@@ -20,7 +20,6 @@ architecture Behavioral of TopDesign is
 component segmentdriver is
     Port ( display : in STD_LOGIC_VECTOR (31 downto 0);
            seg : out STD_LOGIC_VECTOR(7 downto 0);
-           
            select_Display : out STD_LOGIC_VECTOR(7 downto 0);
            clk : in STD_LOGIC);
 end component;
@@ -35,7 +34,7 @@ end component;
 component float_calc is
     Port ( 
          clk : in STD_LOGIC;
-         errorCode : out STD_LOGIC_VECTOR (3 downto 0):=(others => '0');
+         errorCode : out STD_LOGIC_VECTOR (3 downto 0);
          mantA_in : in STD_LOGIC_VECTOR (12 downto 0);
          mantB_in : in STD_LOGIC_VECTOR (12 downto 0);
          powA_in : in STD_LOGIC_VECTOR (7 downto 0);
@@ -58,7 +57,7 @@ Port(
 end component;
 
 
-SIGNAL numbers : STD_LOGIC_VECTOR(31 downto 0);
+SIGNAL numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
 --onscreen
 SIGNAL onscreen : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
 --Vars
@@ -71,38 +70,46 @@ SIGNAL pow : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 
 SIGNAL errorCode : STD_LOGIC_VECTOR(3 downto 0):=(others=>'0');
 
---Used to determine when a button press has occured
+--Millised nupud
 signal btnReg : std_logic_vector (4 downto 0) := "00000";
-signal btnDetect : std_logic;
-signal btnDeBnc : std_logic_vector(4 downto 0);
+signal btnDeBnc : std_logic_vector(4 downto 0):= "00000";
 
-signal mode : std_logic_vector(1 downto 0);
+signal mode : std_logic_vector(1 downto 0):="11";
 
 begin
+   
+   --Siin seome komponendid kokku
+   mapFloatingPointUnit: float_calc Port MAP( 
+      clk => clk,
+      errorCode=>errorCode,
+      mantA_in =>mant_a,
+      mantB_in =>mant_b,
+      powA_in =>pow_a,
+      powB_in =>pow_b,
+      mode =>mode,
+      mant=>mant,
+      pow =>pow
+   );
+   
+   --Debounces btn signals
+   Inst_btn_debounce: debouncer 
+     generic map(
+      DEBNC_CLOCKS => 15, --(2**16)
+      PORT_WIDTH => 5)
+     port map(
+      SIGNAL_I => BTN,
+      CLK_I => CLK,
+      SIGNAL_O => btnDeBnc
+   );
+   
+   mapBinToDec: bin_to_dec PORT MAP(
+     
+      sign =>onscreen(12),
+      number => onscreen(11 downto 0),
+      result => numbers(19 downto 0)
+   );        
 
-        --Debounces btn signals
-        Inst_btn_debounce: debouncer 
-            generic map(
-                DEBNC_CLOCKS => (2**16),
-                PORT_WIDTH => 5)
-            port map(
-                SIGNAL_I => BTN,
-                CLK_I => CLK,
-                SIGNAL_O => btnDeBnc
-            );
-        
-        --Registers the debounced button signals, for edge detection.
-        btn_reg_process : process (CLK)
-        begin
-            if (rising_edge(CLK)) then
-                btnReg <= btnDeBnc(4 downto 0);
-            end if;
-            
-        end process;
-
-
-
-   uut2: segmentDriver PORT MAP(
+   map_segmentDriver: segmentDriver PORT MAP(
       display => numbers,
       seg =>SSEG_CA,
       select_Display => SSEG_AN,
@@ -110,30 +117,20 @@ begin
 
    );
    
-   mapBinToDec: bin_to_dec PORT MAP(
-      --sign =>SW(15),
-      --number => SW(11 downto 0),
-      sign =>onscreen(12),
-      number => onscreen(11 downto 0),
-            
-      result => numbers(19 downto 0)
-   );
+
    
-   mapFloatingPointUnit: float_calc Port MAP( 
-            clk => clk,
-            errorCode=>errorCode,
-            mantA_in =>mant_a,
-            mantB_in =>mant_b,
-            powA_in =>pow_a,
-            powB_in =>pow_b,
-            mode =>mode,
-            mant=>mant,
-            pow =>pow
-   );
-   
-   
+    --registreerime nupuvajutuse
+    btn_reg_process : process (CLK)
+       begin
+          if (rising_edge(CLK)) then
+            btnReg <= btnDeBnc(4 downto 0);
+          end if;
+              
+    end process;
+      
    action_map : process(btnReg)
    begin
+       --BTNR sisestus
        if btnReg = "00001" then
           if SW(14 downto 13)="00" then
               numbers(31 downto 28)<="1010"; --M
@@ -143,11 +140,11 @@ begin
           elsif SW(14 downto 13)="01" then
               numbers(31 downto 28)<="1011"; --P
               numbers(27 downto 24)<="0001"; --1          
-              pow_a<=SW(15)&SW(11 downto 5); --power A
+              pow_a<=SW(15)&SW(6 downto 0); --power A
               
-              onscreen(12)<=SW(15);
+              onscreen(12)<=pow_a(7);
               onscreen(6 downto 0)<=pow_a(6 downto 0);
-              if SW(15)='1' then
+              if pow_a(7)='1' then
                 onscreen(11 downto 7)<="11111";
               else
                 onscreen(11 downto 7)<="00000";
@@ -160,28 +157,28 @@ begin
           elsif SW(14 downto 13)="11" then
               numbers(31 downto 28)<="1011"; --P
               numbers(27 downto 24)<="0010"; --2          
-              pow_b<=SW(15)&SW(11 downto 5); --power B
+              pow_b<=SW(15)&SW(6 downto 0); --power B
               
-              onscreen(12)<=SW(15);
-                            onscreen(6 downto 0)<=pow_b(6 downto 0);
-                            if SW(15)='1' then
-                              onscreen(11 downto 7)<="11111";
-                            else
-                              onscreen(11 downto 7)<="00000";
-                           end if;  
+              onscreen(12)<=pow_b(7);
+              onscreen(6 downto 0)<=pow_b(6 downto 0);
+              if pow_b(7)='1' then
+              onscreen(11 downto 7)<="11111";
+              else
+              onscreen(11 downto 7)<="00000";
+              end if;  
           end if;
        --Tehted
-       elsif btnReg = "10000" or btnReg = "01000" or btnReg = "00100" then
-       --Liitmine
+       elsif (btnReg = "10000" or btnReg = "01000" or btnReg = "00100") then
+       --Liitmine BTNC
         if btnReg = "10000" then
           mode<="00";
           numbers(27 downto 24)<="0011"; --3
-        --Lahutamine
+        --Lahutamine BTNL
         elsif btnReg = "01000" then
          mode<="01";
          numbers(27 downto 24)<="0100"; --4
-        --Korrutamine
-        elsif btnReg = "01000" then
+        --Korrutamine BTNU
+        elsif btnReg = "00100" then
          mode<="10";
          numbers(27 downto 24)<="0101"; --5
         end if;
@@ -196,8 +193,8 @@ begin
         end if;
       --Veakood ekraaanile
       if errorCode(3)='1' then
-         -- numbers(31 downto 0)<=(others=>'1');
-         -- onscreen(3 downto 0 )<=errorCode;
+         numbers(31 downto 0)<=(others=>'1');
+         onscreen(3 downto 0 )<=errorCode;
       end if;
                     
       --Kui nuppe ei vajuta on tühi
@@ -206,17 +203,4 @@ begin
    end process;
    
    
-   --numbers(7 downto 0)<= SW(7 downto 0);
-   
-   
-   --numbers(23 downto 20)<="1111"; --R
-   --numbers(19 downto 16)<="1111"; --O
-   
-   --numbers(11 downto 8)<="1111";
-
-   
-
-
-
-
-end Behavioral;
+  end Behavioral;

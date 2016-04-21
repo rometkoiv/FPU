@@ -40,7 +40,7 @@ USE IEEE.NUMERIC_STD.ALL;
 use IEEE.math_real.all;
 
 entity debouncer is
-    Generic ( DEBNC_CLOCKS : INTEGER range 2 to (INTEGER'high) := 2**16;
+    Generic ( DEBNC_CLOCKS : INTEGER range 2 to (INTEGER'high) := 2**16; --65536 tsüklite arv
               PORT_WIDTH : INTEGER range 1 to (INTEGER'high) := 5);
     Port ( SIGNAL_I : in  STD_LOGIC_VECTOR ((PORT_WIDTH - 1) downto 0);
            CLK_I : in  STD_LOGIC;

@@ -170,7 +170,7 @@ begin
            for index in (mlen+mlen+1) downto mlen loop
                if mult(index) = '0'  then
                   if (to_integer(signed(powPlus)) - (index-mlen))>=-96 then  
-                  errorCode<=powPlus(3 downto 0);
+                  
                     mantC:= mult((index) downto (index-mlen));
                     powPlus:=powPlus - (index-mlen);
                     

@@ -1,37 +1,15 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 04/12/2016 02:07:20 PM
--- Design Name: 
+-- Company: TTU ATI
+-- Engineer: Romet Koiv
 -- Module Name: segmentdriver - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Target Devices: Nexys 4
+-- Dependecy:segment_decoder, clock_divider 
 ----------------------------------------------------------------------------------
-
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity segmentdriver is
     Port ( display : in STD_LOGIC_VECTOR (31 downto 0);
@@ -67,13 +45,13 @@ SIGNAL slow_clock : STD_LOGIC;
 begin
 
 --Component instantination
-    uut: segmentDecoder PORT MAP(
+    map_segmentDecoder: segmentDecoder PORT MAP(
         Digit => temporary_data,
         segment => seg
       
     );
     
-    uut1: clock_divider PORT MAP(
+    map_clock_divider: clock_divider PORT MAP(
         clk => clk,
         enable=>'1',
         reset=>'0',
