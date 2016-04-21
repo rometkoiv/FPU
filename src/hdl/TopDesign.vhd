@@ -73,10 +73,10 @@ SIGNAL onscreen : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
 --Vars
 SIGNAL mant_a : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
 SIGNAL mant_b : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
-SIGNAL mant : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
+SIGNAL mant : STD_LOGIC_VECTOR(12 downto 0);
 SIGNAL pow_a : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
 SIGNAL pow_b : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
-SIGNAL pow : STD_LOGIC_VECTOR(7 downto 0):=(others=>'0');
+SIGNAL pow : STD_LOGIC_VECTOR(7 downto 0);
 
 SIGNAL errorCode : STD_LOGIC_VECTOR(3 downto 0):=(others=>'0');
 
@@ -218,8 +218,8 @@ begin
       mant_b<=(others=>'0');
       pow_a<=(others=>'0');
       pow_b<=(others=>'0');
-      mant<=(others=>'0');
-      pow<=(others=>'0');
+      --mant<=(others=>'0');
+      --pow<=(others=>'0');
       onscreen<=(others=>'0');
       end if; 
      
