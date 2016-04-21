@@ -23,12 +23,11 @@ begin
 
    
    bin_to_bcd : process (number,clk)
-      -- Internal variable for storing bits
       
       variable shift : unsigned(27 downto 0);
       variable negative : unsigned(11 downto 0);
-      variable start : std_logic:='0';
-	  -- Alias for parts of shift register
+      
+	  -- järgud
       alias num is shift(11 downto 0);
       alias one is shift(15 downto 12);
       alias ten is shift(19 downto 16);
@@ -53,15 +52,15 @@ begin
           num := negative;  
        end if;
       
-      
+      --algselt nullid
       one := X"0";
       ten := X"0";
       hun := X"0";
       tho := X"0";
       
-	  -- Loop eight times
+	  -- Loop twelve times
       for i in 1 to num'Length loop
-	     -- Check if any digit is greater than or equal to 5
+	    
          if one >= 5 then
             one := one + 3;
          end if;

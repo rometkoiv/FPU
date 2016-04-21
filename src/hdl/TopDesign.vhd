@@ -66,7 +66,8 @@ Port(
 end component;
 
 
-SIGNAL numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
+SIGNAL numberToSeg : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
+SIGNAL decimalNumber : STD_LOGIC_VECTOR(19 downto 0):=(others=>'0');
 --onscreen
 SIGNAL onscreen : STD_LOGIC_VECTOR(12 downto 0):=(others=>'0');
 --Vars
@@ -115,11 +116,11 @@ begin
       clk=> clk,
       sign =>onscreen(12),
       number => onscreen(11 downto 0),
-      result => numbers(19 downto 0)
+      result => decimalNumber
    );        
 
    map_segmentDriver: segmentDriver PORT MAP(
-      display => numbers,
+      display => numberToSeg,
       seg =>SSEG_CA,
       select_Display => SSEG_AN,
       clk => clk
@@ -139,17 +140,18 @@ begin
       
    action_map : process(btnReg,clk)
    variable toScreen :STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
+   variable numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
    begin
        --BTNR sisestus
        if btnReg = "00001" then
           if SW(14 downto 13)="00" then
-              numbers(31 downto 28)<="1010"; --M
-              numbers(27 downto 24)<="0001"; --1
+              numbers(31 downto 28):="1010"; --M
+              numbers(27 downto 24):="0001"; --1
               mant_a<=SW(15)&SW(11 downto 0); --mantiss A
               onscreen<=mant_a;          
           elsif SW(14 downto 13)="01" then
-              numbers(31 downto 28)<="1011"; --P
-              numbers(27 downto 24)<="0001"; --1          
+              numbers(31 downto 28):="1011"; --P
+              numbers(27 downto 24):="0001"; --1          
               pow_a<=SW(15)&SW(6 downto 0); --power A
               
               onscreen(12)<=pow_a(7);
@@ -160,13 +162,13 @@ begin
                 onscreen(11 downto 7)<="00000";
               end if;   
           elsif SW(14 downto 13)="10" then
-              numbers(31 downto 28)<="1010"; --M
-              numbers(27 downto 24)<="0010"; --2          
+              numbers(31 downto 28):="1010"; --M
+              numbers(27 downto 24):="0010"; --2          
               mant_b<=SW(15)&SW(11 downto 0); --mantiss B
               onscreen<=mant_b;  
           elsif SW(14 downto 13)="11" then
-              numbers(31 downto 28)<="1011"; --P
-              numbers(27 downto 24)<="0010"; --2          
+              numbers(31 downto 28):="1011"; --P
+              numbers(27 downto 24):="0010"; --2          
               pow_b<=SW(15)&SW(6 downto 0); --power B
               
               onscreen(12)<=pow_b(7);
@@ -177,37 +179,40 @@ begin
               onscreen(11 downto 7)<="00000";
               end if;  
           end if;
+       end if;
        --Tehted
-       elsif (btnReg = "10000" or btnReg = "01000" or btnReg = "00100") then
+       if (btnReg = "10000" or btnReg = "01000" or btnReg = "00100") then
        --Liitmine BTNC
         if btnReg = "10000" then
           mode<="00";
-          numbers(27 downto 24)<="0011"; --3
+          numbers(27 downto 24):="0011"; --3
         --Lahutamine BTNL
         elsif btnReg = "01000" then
          mode<="01";
-         numbers(27 downto 24)<="0100"; --4
+         numbers(27 downto 24):="0100"; --4
         --Korrutamine BTNU
         elsif btnReg = "00100" then
          mode<="10";
-         numbers(27 downto 24)<="0101"; --5
+         numbers(27 downto 24):="0101"; --5
         end if;
         
         if SW(14 downto 13)="00" then
-           numbers(31 downto 28)<="1010"; --M
+           numbers(31 downto 28):="1010"; --M
            onscreen<=mant;
         elsif SW(14 downto 13)="01" then
-           numbers(31 downto 28)<="1011"; --P
+           numbers(31 downto 28):="1011"; --P
            onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
            onscreen(6 downto 0)<=pow(6 downto 0);         
         end if;
-      --Veakood ekraaanile
-      if errorCode(3)='1' then
-         numbers(31 downto 0)<=(others=>'1');
+        --Veakood ekraaanile
+        if errorCode(3)='1' then
+         numbers(31 downto 0):=(others=>'1');
          onscreen(3 downto 0 )<=errorCode;
+        end if;
+      
       end if;
       
-      elsif btnReg = "00010" then
+      if btnReg = "00010" then
       --Kui BTND siis nullime
       mant_a<=(others=>'0');
       mant_b<=(others=>'0');
@@ -216,9 +221,10 @@ begin
       mant<=(others=>'0');
       pow<=(others=>'0');
       onscreen<=(others=>'0');
-     end if; 
+      end if; 
      
-     
+     numberToSeg<=numbers;
+     numberToSeg(19 downto 0)<=decimalNumber;
    end process;
    
    
