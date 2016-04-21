@@ -181,36 +181,67 @@ begin
           end if;
        end if;
        --Tehted
-       if (btnReg = "10000" or btnReg = "01000" or btnReg = "00100") then
+       
        --Liitmine BTNC
         if btnReg = "10000" then
           mode<="00";
           numbers(27 downto 24):="0011"; --3
+           
+                 if SW(14 downto 13)="00" then
+                    numbers(31 downto 28):="1010"; --M
+                    onscreen<=mant;
+                 elsif SW(14 downto 13)="01" then
+                    numbers(31 downto 28):="1011"; --P
+                    onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
+                    onscreen(6 downto 0)<=pow(6 downto 0);         
+                 end if;
+                 --Veakood ekraaanile
+                 if errorCode(3)='1' then
+                  numbers(31 downto 0):=(others=>'1');
+                  onscreen(3 downto 0 )<=errorCode;
+                 end if;
+       end if;
         --Lahutamine BTNL
-        elsif btnReg = "01000" then
+        if btnReg = "01000" then
          mode<="01";
          numbers(27 downto 24):="0100"; --4
-        --Korrutamine BTNU
-        elsif btnReg = "00100" then
+          
+                if SW(14 downto 13)="00" then
+                   numbers(31 downto 28):="1010"; --M
+                   onscreen<=mant;
+                elsif SW(14 downto 13)="01" then
+                   numbers(31 downto 28):="1011"; --P
+                   onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
+                   onscreen(6 downto 0)<=pow(6 downto 0);         
+                end if;
+                --Veakood ekraaanile
+                if errorCode(3)='1' then
+                 numbers(31 downto 0):=(others=>'1');
+                 onscreen(3 downto 0 )<=errorCode;
+                end if;
+        end if;
+     --Korrutamine BTNU
+     if btnReg = "00100" then
          mode<="10";
          numbers(27 downto 24):="0101"; --5
-        end if;
-        
-        if SW(14 downto 13)="00" then
-           numbers(31 downto 28):="1010"; --M
-           onscreen<=mant;
-        elsif SW(14 downto 13)="01" then
-           numbers(31 downto 28):="1011"; --P
-           onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
-           onscreen(6 downto 0)<=pow(6 downto 0);         
-        end if;
-        --Veakood ekraaanile
-        if errorCode(3)='1' then
-         numbers(31 downto 0):=(others=>'1');
-         onscreen(3 downto 0 )<=errorCode;
-        end if;
-      
+          
+                if SW(14 downto 13)="00" then
+                   numbers(31 downto 28):="1010"; --M
+                   onscreen<=mant;
+                elsif SW(14 downto 13)="01" then
+                   numbers(31 downto 28):="1011"; --P
+                   onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
+                   onscreen(6 downto 0)<=pow(6 downto 0);         
+                end if;
+                --Veakood ekraaanile
+                if errorCode(3)='1' then
+                 numbers(31 downto 0):=(others=>'1');
+                 onscreen(3 downto 0 )<=errorCode;
+                end if;
       end if;
+       
+      
+      
       
       if btnReg = "00010" then
       --Kui BTND siis nullime
@@ -220,6 +251,7 @@ begin
       pow_b<=(others=>'0');
       --mant<=(others=>'0');
       --pow<=(others=>'0');
+      numbers(31 downto 0):=(others=>'1');
       onscreen<=(others=>'0');
       end if; 
      
