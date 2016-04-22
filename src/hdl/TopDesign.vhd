@@ -138,7 +138,7 @@ begin
               
     end process;
       
-   action_map : process(btnReg,clk)
+   action_map : process(clk,btnReg) --clk,btnReg,
    variable toScreen :STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
    variable numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
    begin
@@ -257,6 +257,10 @@ begin
      
      numberToSeg<=numbers;
      numberToSeg(19 downto 0)<=decimalNumber;
+     
+     --Testing
+     LED(4 downto 0)<=btnReg;
+     
    end process;
    
    

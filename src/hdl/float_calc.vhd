@@ -125,7 +125,7 @@ begin
       if powC=powA then
        
        powMinus := powB-powA;
-       errorCode<= powMinus(3 downto 0);
+--       errorCode<= powMinus(3 downto 0);
        tshift := to_integer(signed(powMinus)*(-1));
          if powMinus(plen)='1' then
            mantC:=std_logic_vector(shift_right(signed(mantB), tshift))+mantA;
