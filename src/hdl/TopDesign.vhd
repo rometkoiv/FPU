@@ -104,7 +104,7 @@ begin
    --Debounces btn signals
    Inst_btn_debounce: debouncer 
      generic map(
-      DEBNC_CLOCKS => 15, --(2**16)
+      DEBNC_CLOCKS => 2**16, --(2**16) kaks astmes 16
       PORT_WIDTH => 5)
      port map(
       SIGNAL_I => BTN,
@@ -130,18 +130,19 @@ begin
 
    
     --registreerime nupuvajutuse
-    btn_reg_process : process (CLK)
+    btn_reg_process : process (btnDeBnc)--CLK
        begin
-          if (rising_edge(CLK)) then
-            btnReg <= btnDeBnc(4 downto 0);
+          if  btnReg/=btnDeBnc then --rising_edge(CLK) and
+            btnReg <= btnDeBnc;
           end if;
               
     end process;
       
-   action_map : process(clk,btnReg) --clk,btnReg,
+   action_map : process(btnReg,clk) --Kell maha kui plaadil clk,btnReg,
    variable toScreen :STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
    variable numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
    begin
+       mode<="11";
        --BTNR sisestus
        if btnReg = "00001" then
           if SW(14 downto 13)="00" then
@@ -255,7 +256,11 @@ begin
       onscreen<=(others=>'0');
       end if; 
      
-     numberToSeg<=numbers;
+     LED(15 downto 8)<=pow;
+     LED(7 downto 6)<=mode;
+     --LED(5) <=clk;
+     
+     numberToSeg(31 downto 20)<=numbers(31 downto 20);
      numberToSeg(19 downto 0)<=decimalNumber;
      
      --Testing

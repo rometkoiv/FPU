@@ -51,6 +51,7 @@ variable powMinus : STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
 variable powPlus : STD_LOGIC_VECTOR (8 downto 0):=(others => '0');
 
 variable minusOne : STD_LOGIC_VECTOR (13 downto 0):=(others => '1');
+variable minusOneUsed : STD_LOGIC:='0';
 variable mult : STD_LOGIC_VECTOR (27 downto 0):=(others => '0');
 variable multMax : INTEGER range 1 to (INTEGER'high);
 
@@ -101,16 +102,25 @@ begin
          end if;
       end loop;
   end if;
- 
-   
+  --Kui pole midagi
+   if mode = "11" then
+      mant<=(others => '0');
+      pow<=(others => '0');
+   end if;
+    
   --Liitmine
    if mode="00" or mode="01" then
        
       --Lahutamine
       if mode = "01" then
         --muudame mantB märki
+        if minusOneUsed='0' then
         mult := std_logic_vector(signed(mantB)*signed(minusOne));
         mantB := mult(13 downto 0);
+        minusOneUsed:='1';
+        end if;
+      else 
+        minusOneUsed:='0';
       end if;
        
       --Teeme kindlaks kumb astendaja on suurem
