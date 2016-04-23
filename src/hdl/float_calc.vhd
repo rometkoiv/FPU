@@ -33,7 +33,7 @@ begin
 
 
 
-float_calculator : process(clk)
+float_calculator : process(mode, mantA_in, mantB_in, powA_in, powB_in,clk)
 --Constants
 variable mlen : INTEGER range 1 to (INTEGER'high) := 13;
 variable plen : INTEGER range 1 to (INTEGER'high) := 7; 
@@ -58,6 +58,7 @@ variable multMax : INTEGER range 1 to (INTEGER'high);
 variable longShift : STD_LOGIC_VECTOR (27 downto 0):=(others => '0');
 
 begin
+errorCode<="0000";
  powA:=powA_in;
  powB:=powB_in;
  --Pikendame mantisse, et hõlbustada liitmise ja lahutamise arvutamist
@@ -173,7 +174,7 @@ begin
                   if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
                     mantC:= mult((index) downto (index-mlen));
                     powPlus:=powPlus + (index-mlen);
-                    
+                    errorCode<="0000";
                   else  
                     --Positiivset tulemust ei saa vähendada                  
                     errorCode<="1001";

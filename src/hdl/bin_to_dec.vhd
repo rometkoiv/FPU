@@ -22,7 +22,7 @@ architecture Behavioral of bin_to_dec is
 begin
 
    
-   bin_to_bcd : process (number,clk)
+   bin_to_bcd : process (number,sign,clk)
       
       variable shift : unsigned(27 downto 0);
       variable negative : unsigned(11 downto 0);
