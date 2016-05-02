@@ -36,11 +36,11 @@ process(Digit)
         when "1010" => Decode_Data := "00010101"; --M
         when "1011" => Decode_Data := "01100111"; --P
         
-        when "1100" => Decode_Data := "11111110"; --zero dot
-        when "1101" => Decode_Data := "00000001"; -- minus sign
-        when "1110" => Decode_Data := "00110001"; -- Min 1
+        when "1100" => Decode_Data := "11111110"; --null punkt
+        when "1101" => Decode_Data := "00000001"; --miinus märk
+        when "1110" => Decode_Data := "00110001"; -- miinus 1
         
-        when others => Decode_Data := "00000000"; --Blank
+        when others => Decode_Data := "00000000"; --Tühi
         end case;
         segment(0) <= not Decode_Data(6);
         segment(1) <= not Decode_Data(5);

@@ -58,7 +58,7 @@ begin
       hun := X"0";
       tho := X"0";
       
-	  -- Loop twelve times
+	  
       for i in 1 to num'Length loop
 	    
          if one >= 5 then
@@ -77,11 +77,11 @@ begin
             tho := tho + 3;
          end if;
          
-		 -- Shift entire register left once
+		 -- Tsükli lõpus nihe vasakule
          shift := shift_left(shift, 1);
       end loop;
       
-	  -- Push decimal numbers to output
+	  
 	  result(15 downto 12)    <= std_logic_vector(tho);
       result(11 downto 8)    <= std_logic_vector(hun);
       result(7 downto 4)     <= std_logic_vector(ten);

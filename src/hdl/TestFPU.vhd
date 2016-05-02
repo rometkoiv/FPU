@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------
+-- Company: TTU ATI
+-- Engineer: Romet Koiv
+-- Module Name: TestFPU - Behavioral
+-- Dependency: float_calc
+-- Target Devices: Nexys 4
+----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
