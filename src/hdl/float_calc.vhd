@@ -24,6 +24,14 @@ entity float_calc is
            powB_in : in STD_LOGIC_VECTOR (7 downto 0):=(others => '0');
            mode : in STD_LOGIC_VECTOR (1 downto 0);
            mant : out STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
+           --
+           mult_o : out STD_LOGIC_VECTOR (27 downto 0);
+           powPlus_o : out STD_LOGIC_VECTOR (8 downto 0);
+           mantA_o : out STD_LOGIC_VECTOR (13 downto 0);
+           mantB_o : out STD_LOGIC_VECTOR (13 downto 0);
+           powA_o : out STD_LOGIC_VECTOR (7 downto 0);
+           powB_o : out STD_LOGIC_VECTOR (7 downto 0);
+           --
            pow : out STD_LOGIC_VECTOR (7 downto 0):=(others => '0'));
            
 end float_calc;
@@ -159,10 +167,17 @@ errorCode<="0000";
    --korrutamine        
    elsif mode = "10" then
     mult:= std_logic_vector(signed(mantA)*signed(mantB));
-    powPlus:= std_logic_vector(powA(7)&powA) + std_logic_vector(powB(7)&powB);
+    powPlus:= std_logic_vector(signed(powA(7)&powA)+signed(powB(7)&powB));
     
+    mantA_o<=mantA;
+    mantB_o<=mantB;
+    powA_o<=powA;
+    powB_o<=powB;
+    
+    powPlus_o<=powPlus;
+     mult_o<=mult;
     --Korrutise väärtus
-    if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
+    --if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
         
         
         --positiivse mantissi vähendamine
@@ -172,8 +187,8 @@ errorCode<="0000";
               if mult(index) > '0'  then
                       
                   if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
-                    mantC:= mult((index) downto (index-mlen));
-                    powPlus:=powPlus + (index-mlen);
+                    mantC:= mult((index+1) downto (index-mlen+1));
+                    powPlus:=powPlus + (mlen+mlen-index-6);
                     errorCode<="0000";
                   else  
                     --Positiivset tulemust ei saa vähendada                  
@@ -203,13 +218,13 @@ errorCode<="0000";
         end if;
        
      
-    else
+    --else
     --Kui korras kanname otse üle
-    mantC:=mult(13 downto 0);
-    end if;
+    --mantC:=mult(13 downto 0);
+    --end if;
     
     powC:=powPlus(7 downto 0);
-   
+    
    --Mode if end
    end if;
    

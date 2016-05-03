@@ -44,13 +44,13 @@ test_float_calc: float_calc PORT MAP(
 
                     clk =>CLK,
                     errorCode=>error,
-                      mantA_in => "0000000000101", --5
+                      mantA_in => "0110000000000", --5
                       --mantA_in => "1010000100000",
                       --mantA_in => "0111111111011", -- -5 
-                      mantB_in => "0000000000111", --7 
+                      mantB_in => "0110000000000", --7 
                       --powA => "10101111", -- -128
                       --powB => "10101111", -- -81
-                      powA_in => "00000010", -- 2
+                      powA_in => "00000001", -- 2
                       powB_in => "00000001", -- 1
                       mode => "10",
                       mant => mant,
