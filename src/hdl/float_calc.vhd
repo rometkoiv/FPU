@@ -188,7 +188,11 @@ errorCode<="0000";
                       
                   if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
                     mantC:= mult((index+1) downto (index-mlen+1));
+                    if(index = 22) then
                     powPlus:=powPlus + (mlen+mlen-index-6);
+                    else
+                    powPlus:=powPlus + (mlen+mlen-index-4);
+                    end if;
                     errorCode<="0000";
                   else  
                     --Positiivset tulemust ei saa vähendada                  
