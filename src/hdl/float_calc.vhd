@@ -174,25 +174,18 @@ errorCode<="0000";
     powA_o<=powA;
     powB_o<=powB;
     
-    powPlus_o<=powPlus;
-     mult_o<=mult;
-    --Korrutise väärtus
-    --if (to_integer(signed(mult))) > 4095 or (to_integer(signed(mult))) < -3072 then
-        
-        
-        --positiivse mantissi vähendamine
-        if (to_integer(signed(mult))) > 0 then
+   
+    --positiivse mantissi vähendamine
+    if (to_integer(signed(mult))) > 0 then
         
           for index in (mlen+mlen+1) downto mlen loop
               if mult(index) > '0'  then
-                      
-                  if (to_integer(signed(powPlus)) + (index-mlen))<=127 then  
-                    mantC:= mult((index+1) downto (index-mlen+1));
-                    if(index = 22) then
-                    powPlus:=powPlus + (mlen+mlen-index-6);
-                    else
-                    powPlus:=powPlus + (mlen+mlen-index-4);
-                    end if;
+                  --(mlen+mlen-3) Komakohtade arv 23    
+                  if (to_integer(signed(powPlus)) + (index - (mlen+mlen-3)))<=127 then  
+                    mantC:= mult((index+2) downto (index+2-mlen));
+                    
+                    powPlus:=powPlus + (index - (mlen+mlen-3));
+                    
                     errorCode<="0000";
                   else  
                     --Positiivset tulemust ei saa vähendada                  
@@ -203,13 +196,13 @@ errorCode<="0000";
                end if;   
             end loop;
         --negatiivse mantissi suurendamine
-        else
+      else
            for index in (mlen+mlen+1) downto mlen loop
                if mult(index) = '0'  then
-                  if (to_integer(signed(powPlus)) - (index-mlen))>=-96 then  
+                  if (to_integer(signed(powPlus)) - (index - (mlen+mlen-3)))>=-65 then  
                   
-                    mantC:= mult((index) downto (index-mlen));
-                    powPlus:=powPlus - (index-mlen);
+                    mantC:= mult((index+2) downto (index+2-mlen));
+                    powPlus:=powPlus + (index - (mlen+mlen-3));
                     
                   else  
                   --Negatiivset tulemust ei saa vähendada                  
@@ -219,23 +212,21 @@ errorCode<="0000";
                  exit;
                end if;   
            end loop;
-        end if;
+      end if;
        
-     
-    --else
-    --Kui korras kanname otse üle
-    --mantC:=mult(13 downto 0);
-    --end if;
+      powPlus_o<=powPlus;
+      mult_o<=mult;
     
     powC:=powPlus(7 downto 0);
+       
     
    --Mode if end
    end if;
    
 
       --kui mantiss on liiga suur, suurendame astendajat
-      if to_integer(signed(mantC)) < -3072 or to_integer(signed(mantC)) > 4095 then
-         if to_integer(signed(powC))<127 or to_integer(signed(powC))>-96 then
+      if to_integer(signed(mantC)) < -2049 or to_integer(signed(mantC)) > 4095 then
+         if to_integer(signed(powC))<127 or to_integer(signed(powC))>-65 then
           if mantC(13)='0' then
             powC := powC+1;
             mant<=mantC(13 downto 1);
@@ -252,7 +243,7 @@ errorCode<="0000";
          mant<=mantC(12 downto 0);
       end if;
 
-      pow<=powC;
+     pow<=powC;
       
 end process;
 
