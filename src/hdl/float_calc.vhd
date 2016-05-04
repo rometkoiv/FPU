@@ -179,7 +179,7 @@ errorCode<="0000";
     if (to_integer(signed(mult))) > 0 then
         
           for index in (mlen+mlen+1) downto mlen loop
-              if mult(index) > '0'  then
+              if mult(index) > '0' and index < (mlen+mlen)then
                   --(mlen+mlen-3) Komakohtade arv 23    
                   if (to_integer(signed(powPlus)) + (index - (mlen+mlen-3)))<=127 then  
                     mantC:= mult((index+2) downto (index+2-mlen));
@@ -198,7 +198,7 @@ errorCode<="0000";
         --negatiivse mantissi suurendamine
       else
            for index in (mlen+mlen+1) downto mlen loop
-               if mult(index) = '0'  then
+               if mult(index) = '0'  and index < (mlen+mlen) then
                   if (to_integer(signed(powPlus)) - (index - (mlen+mlen-3)))>=-65 then  
                   
                     mantC:= mult((index+2) downto (index+2-mlen));
