@@ -143,8 +143,8 @@ begin
           end if;
               
     end process;
-      
-   action_map : process(mode, numberToSeg, decimalNumber,onscreen ,btnReg,btnDeBnc,SW,mant_a,mant_b,pow_a,pow_b,errorCode,pow,mant,clk) --Kell maha kui plaadil clk,btnReg,
+   action_map : process(mode, numberToSeg, decimalNumber,onscreen ,btnReg,btnDeBnc,SW,mant_a,mant_b,pow_a,pow_b,errorCode,pow,mant,clk) --Kell maha kui plaadil clk,btnReg,   
+   --action_map : process(mode, btnReg,btnDeBnc) --Kell maha kui plaadil clk,btnReg,
    variable toScreen :STD_LOGIC_VECTOR (12 downto 0):=(others => '0');
    variable numbers : STD_LOGIC_VECTOR(31 downto 0):=(others=>'1');
    begin
@@ -236,6 +236,7 @@ begin
            numbers(31 downto 24):="10110101"; --P5
            onscreen(12 downto 7)<=pow(7)&pow(7)&pow(7)&pow(7)&pow(7)&pow(7);
            onscreen(6 downto 0)<=pow(6 downto 0);         
+           
          end if;
          --Veakood ekraaanile
          if errorCode(3)='1' then
@@ -260,15 +261,15 @@ begin
       onscreen<=(others=>'0');
       end if; 
      
-     LED(15 downto 8)<=pow;
-     LED(7 downto 6)<=mode;
+     LED(12 downto 0)<=onscreen;
+     
      --LED(5) <=clk;
+     --See ei toimi seadmel
+     --numberToSeg(31 downto 20)<=numbers(31 downto 20);
+     --numberToSeg(19 downto 0)<=decimalNumber;
      
-     numberToSeg(31 downto 20)<=numbers(31 downto 20);
-     numberToSeg(19 downto 0)<=decimalNumber;
-     
-     --Testing
-     LED(4 downto 0)<=btnReg;
+        numberToSeg(31 downto 24)<=numbers(31 downto 24);
+        numberToSeg(23 downto 4)<=decimalNumber;
      
    end process;
    
