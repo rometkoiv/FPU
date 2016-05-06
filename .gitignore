@@ -1,7 +1,7 @@
 # Generated project files
 proj/FPU.*
 proj/*.log
-*.jou
+proj/*.jou
 
 # Windows image file caches
 Thumbs.db
